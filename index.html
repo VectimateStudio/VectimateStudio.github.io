@@ -22,26 +22,66 @@
     transition: opacity 0.6s ease-out;
   }
 
-  /* ==== SPLASH ==== */
-  #splash {
-    position: fixed;
-    inset: 0;
-    background: #000;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 100;
-    transition: opacity 1.5s ease-out;
-  }
-  #splash.fade-out {
-    opacity: 0;
-    pointer-events: none;
-  }
-  /* only size the splash logo SVG */
-  #splash svg {
-    width: 300px;
-    height: 300px;
-  }
+/* ==== SPLASH ==== */
+#splash {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  transition: opacity 1.5s ease-out;
+}
+#splash.fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
+/* size the splash SVG */
+#splash svg {
+  width: 300px;
+  height: 300px;
+}
+/* common stroke settings */
+#splash .stroke {
+  fill: none;
+  stroke: white;
+  stroke-width: 30;
+  stroke-linecap: round;
+  stroke-dasharray: 1;      /* will be overridden per-path */
+  stroke-dashoffset: 1;     /* will be overridden per-path */
+}
+/* draw the V in one continuous motion */
+#splash .stroke.v {
+  stroke-dasharray: 402.5;
+  stroke-dashoffset: 402.5;
+  animation: drawV 2.0s ease forwards;
+}
+/* draw the T’s top bar, centered at (230,50) */
+#splash .stroke.t-h {
+  /* total length of bar = 80px (40px each side of 230) */
+  stroke-dasharray: 80;
+  stroke-dashoffset: 80;
+  animation: drawTBar 0.6s ease forwards;
+  animation-delay: 2.0s; /* after the V finishes */
+}
+/* draw the T’s vertical bar */
+#splash .stroke.t-v {
+  stroke-dasharray: 60;
+  stroke-dashoffset: 60;
+  animation: drawTVBar 0.6s ease forwards;
+  animation-delay: 2.6s;
+}
+@keyframes drawV {
+  to { stroke-dashoffset: 0; }
+}
+@keyframes drawTBar {
+  to { stroke-dashoffset: 0; }
+}
+@keyframes drawTVBar {
+  to { stroke-dashoffset: 0; }
+}
+
   path {
     fill: none;
     stroke: white;
@@ -209,12 +249,35 @@
 <body>
 
   <!-- SPLASH -->
-  <div id="splash">
-    <svg viewBox="0 0 300 300">
-      <path d="M50,50 L140,230 L230,50" />
-      <path class="tbar" d="M190,40 L270,40" />
-    </svg>
-  </div>
+<div id="splash">
+  <svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Vectimate logo">
+    <defs>
+      <linearGradient id="gradStroke" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#3b82f6" />   <!-- Blue -->
+        <stop offset="100%" stop-color="#ec4899" /> <!-- Pink -->
+      </linearGradient>
+    </defs>
+
+    <!-- continuous V -->
+    <path
+      class="stroke v"
+      d="M50,50 L140,230 L230,50"
+      stroke="url(#gradStroke)"
+      stroke-width="25"
+      stroke-linecap="round"
+    />
+
+    <!-- centered T bar -->
+    <path
+      class="stroke t-h"
+      d="M190,50 L270,50"
+      stroke="url(#gradStroke)"
+      stroke-width="25"
+      stroke-linecap="round"
+    />
+  </svg>
+</div>
+
 
   <!-- MAIN SITE -->
   <div id="main">
@@ -325,7 +388,7 @@
           }, { threshold: 0.1 });
           document.querySelectorAll('.fade-in-section').forEach(el => io.observe(el));
         }, 600);
-      }, 2200);
+      }, 3200);
     });
   </script>
 <script>
