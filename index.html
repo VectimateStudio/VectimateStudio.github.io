@@ -5,169 +5,329 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Vectimate Studio</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    html {
-      scroll-behavior: smooth;
-      scroll-padding-top: 80px;
-    }
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', sans-serif;
-      background: #000;
-      color: white;
-    }
-    #bgCanvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      pointer-events: none;
-      filter: blur(50px);
-      mix-blend-mode: screen;
-      z-index: 0;
-    }
-    @keyframes fadeInUp {
-      0% {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      100% {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-    @keyframes floatArrow {
-      0%, 100% { transform: translateY(0); opacity: 0.6; }
-      50% { transform: translateY(10px); opacity: 1; }
-    }
-    .fade-in-up {
-      animation: fadeInUp 1s ease-out forwards;
-    }
-    .logo {
-      animation: floatLogo 3s ease-in-out infinite;
-    }
-    @keyframes floatLogo {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-5px); }
-    }
-    .shimmer {
-      animation: shimmerAnim 4s ease-in-out infinite;
-    }
-    @keyframes shimmerAnim {
-      0%, 100% { opacity: 0.8; text-shadow: 0 0 10px #82e4ff; }
-      50% { opacity: 1; text-shadow: 0 0 20px #fff; }
-    }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
+<style>
+  /* ==== GLOBAL ==== */
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 80px;
+  }
+  body {
+    margin: 0;
+    background: #000;
+    color: white;
+    font-family: 'Segoe UI', sans-serif;
+  }
+  #main {
+    opacity: 0;
+    transition: opacity 0.6s ease-out;
+  }
 
-    .animate-fadeIn {
-      animation: fadeIn 1s ease-out forwards;
+  /* ==== SPLASH ==== */
+  #splash {
+    position: fixed;
+    inset: 0;
+    background: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    transition: opacity 1.5s ease-out;
+  }
+  #splash.fade-out {
+    opacity: 0;
+    pointer-events: none;
+  }
+  /* only size the splash logo SVG */
+  #splash svg {
+    width: 300px;
+    height: 300px;
+  }
+  path {
+    fill: none;
+    stroke: white;
+    stroke-width: 30;
+    stroke-linecap: square;
+    stroke-dasharray: 1000;
+    stroke-dashoffset: 1000;
+    animation: drawV 2.5s ease forwards;
+  }
+  path.tbar {
+    animation: drawT 1.5s ease-out forwards;
+    animation-delay: 0.6s;
+  }
+  @keyframes drawV {
+    to { stroke-dashoffset: 0; }
+  }
+  @keyframes drawT {
+    to { stroke-dashoffset: 0; }
+  }
+  @keyframes fadeOut {
+    to {
+      opacity: 0;
+      visibility: hidden;
     }
-    header {
-      backdrop-filter: none;
-      background: none;
-      box-shadow: none;
-    }
-    .fade-in-section {
+  }
+  .fade-out {
+    animation: fadeOut 1.5s ease-out forwards;
+  }
+
+  /* ==== MAIN CONTENT ==== */
+  #bgCanvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    filter: blur(50px);
+    mix-blend-mode: screen;
+    z-index: 0;
+  }
+  @keyframes fadeInUp {
+    0% {
       opacity: 0;
       transform: translateY(20px);
-      transition: all 0.8s ease-out;
-      will-change: opacity, transform;
     }
-
-    .fade-in-section.visible {
+    100% {
       opacity: 1;
       transform: translateY(0);
     }
+  }
 
-  </style>
+  /* ==== FLOATING ARROW (CSS TRIANGLE) ==== */
+  @keyframes floatArrow {
+    0%,100% { transform: translate(-50%, 0); opacity: 0.6; }
+    50%      { transform: translate(-50%, 10px); opacity: 1; }
+  }
+  .float-arrow {
+    position: fixed;
+    bottom: 2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    pointer-events: none;
+    z-index: 50;
+    animation: floatArrow 2s ease-in-out infinite;
+  }
+  .float-arrow p {
+    margin: 0 0 0.5rem;
+    background: rgba(255,255,255,0.15);
+    color: #fff;
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    font-size: 0.875rem;
+  }
+  .float-arrow .arrow-triangle {
+    width: 0;
+    height: 0;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 12px solid white;
+  }
+
+  /* ==== OTHER ANIMATIONS ==== */
+  .fade-in-up {
+    animation: fadeInUp 1s ease-out forwards;
+  }
+  .logo {
+    animation: floatLogo 3s ease-in-out infinite;
+  }
+  @keyframes floatLogo {
+    0%, 100% { transform: translateY(0); }
+    50%       { transform: translateY(-5px); }
+  }
+  .shimmer {
+    animation: shimmerAnim 4s ease-in-out infinite;
+  }
+  @keyframes shimmerAnim {
+    0%, 100% { opacity: 0.8; text-shadow: 0 0 10px #82e4ff; }
+    50%      { opacity: 1;   text-shadow: 0 0 20px #fff; }
+  }
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  .animate-fadeIn {
+    animation: fadeIn 1s ease-out forwards;
+  }
+
+  /* ==== HEADER ==== */
+  header {
+    position: fixed;
+    top: 4px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 50;
+    width: 100%;
+    max-width: 90vw;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 1rem;
+  }
+  header .logo-link {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(8px);
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+  }
+  header nav a {
+    margin-left: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(8px);
+    font-size: 0.875rem;
+    transition: background 0.2s;
+    color: white;
+    text-decoration: none;
+  }
+  header nav a:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+
+  /* ==== FADE-IN-SECTIONS ==== */
+  .fade-in-section {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.8s ease-out;
+    will-change: opacity, transform;
+  }
+  .fade-in-section.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+</style>
 </head>
+
 <body>
 
-<canvas id="bgCanvas"></canvas>
+  <!-- SPLASH -->
+  <div id="splash">
+    <svg viewBox="0 0 300 300">
+      <path d="M50,50 L140,230 L230,50" />
+      <path class="tbar" d="M190,40 L270,40" />
+    </svg>
+  </div>
 
-<header class="fixed top-4 left-1/2 transform -translate-x-1/2 z-50 w-full max-w-[90vw] flex justify-center">
-  <div class="relative w-full max-w-7xl flex justify-between items-center px-4">
+  <!-- MAIN SITE -->
+  <div id="main">
+    <canvas id="bgCanvas"></canvas>
 
-    <div class="absolute -top-3 left-0 bg-white/10 backdrop-blur-md px-4 py-2 rounded-full shadow-lg flex items-center space-x-2">
-      <img src="VSU.png" alt="Logo" class="w-8 h-8 rounded-full" />
-      <a href="#" class="font-bold text-sm bg-gradient-to-r from-blue-400 to-pink-400 bg-clip-text text-transparent hover:opacity-80 transition duration-300">
+    <header>
+      <div class="logo-link">
+        <img src="VSU.png" alt="Logo" class="w-8 h-8 rounded-full"/>
+        <a href="#" class="font-bold text-sm bg-gradient-to-r from-blue-400 to-pink-400 bg-clip-text text-transparent">
+          Vectimate Studio
+        </a>
+      </div>
+      <nav>
+        <a href="#showcase">Showcase</a>
+        <a href="#features">Features</a>
+      </nav>
+    </header>
+
+    <section class="relative z-10 min-h-screen flex flex-col items-center justify-center text-center px-4 space-y-6 pt-20 fade-in-section">
+      <div class="logo-container bg-white/10 backdrop-blur-xl p-6 rounded-full shadow-2xl">
+        <img src="VSU.png" alt="Vectimate Logo" class="logo w-20 h-20 rounded-full" />
+      </div>
+      <h1 class="main-text text-5xl font-extrabold bg-gradient-to-r from-blue-400 to-pink-400 bg-clip-text text-transparent">
         Vectimate Studio
-      </a>      
-    </div>
+      </h1>
+      <p class="sub-text max-w-xl text-white/80 leading-relaxed">
+        The most customizable OBS Scene creator.<br>
+        Customize with mods (.vem), CSS, and more!
+      </p>
 
-    <div class="flex space-x-2 ml-auto">
-      <a href="#showcase" class="px-4 py-2 rounded-full backdrop-blur-md bg-white/10 hover:bg-white/20 transition text-white shadow-md text-sm">Showcase</a>
-      <a href="#features" class="px-4 py-2 rounded-full backdrop-blur-md bg-white/10 hover:bg-white/20 transition text-white shadow-md text-sm">Features</a>
-    </div>
-
-  </div>
-</header>
-
-<section class="relative z-10 min-h-screen flex flex-col items-center justify-center text-center px-4 space-y-6 pt-20 fade-in-section">
-  <div class="logo-container bg-white/10 backdrop-blur-xl p-6 rounded-full shadow-2xl fade-in-section">
-    <img src="VSU.png" alt="Vectimate Logo" class="logo w-20 h-20 rounded-full" />
-  </div>
-  <h1 class="main-text text-5xl font-extrabold bg-gradient-to-r from-blue-400 to-pink-400 bg-clip-text text-transparent fade-in-section">Vectimate Studio</h1>
-  <p class="sub-text max-w-xl text-white/80 leading-relaxed fade-in-section">
-    The most customizable OBS Scene creator.<br>
-    Customize with mods (.vem), CSS (using the css mod), and more!
-  </p>
-
-  <div class="flex flex-col sm:flex-row gap-4 mt-6">
-    <a href="https://vectimatestudio.github.io/studio/" target="_blank" class="px-6 py-3 rounded-full bg-gradient-to-r from-blue-400 to-pink-400 text-black font-semibold shadow-lg hover:scale-105 hover:shadow-pink-200 transition-all">
-      🚀 Launch Vectimate
-    </a>
-    <a href="https://github.com/VectimateStudio/studio" target="_blank" class="px-6 py-3 rounded-full bg-gradient-to-r from-pink-400 to-blue-400 text-black font-semibold shadow-lg hover:scale-105 hover:shadow-blue-200 transition-all">
-      >_ Visit Project
-    </a>
-  </div>
-</section>
-
-<div class="absolute bottom-4 inset-x-0 flex flex-col items-center z-20 animate-[floatArrow_2s_ease-in-out_infinite]">
-  <p class="text-white text-sm bg-white/10 backdrop-blur-md px-4 py-2 rounded-full shadow-md">Scroll down for more details</p>
-  <svg class="w-6 h-6 text-white opacity-80 mt-2" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
-  </svg>
+      <div class="flex flex-col sm:flex-row gap-4 mt-6">
+        <a href="https://vectimatestudio.github.io/studio/" target="_blank"
+           class="px-6 py-3 rounded-full bg-gradient-to-r from-blue-400 to-pink-400 text-black font-semibold shadow-lg hover:scale-105 transition-all">
+          🚀 Launch Vectimate
+        </a>
+        <a href="https://github.com/VectimateStudio/studio" target="_blank"
+           class="px-6 py-3 rounded-full bg-gradient-to-r from-pink-400 to-blue-400 text-black font-semibold shadow-lg hover:scale-105 transition-all">
+          >_ Visit Project
+        </a>
+      </div>
+    </section>
+<div class="float-arrow">
+  <p>Scroll down for more details</p>
+  <div class="arrow-triangle"></div>
 </div>
+    <section id="showcase" class="relative z-10 py-20 px-6 flex flex-col items-center space-y-12 fade-in-section">
+      <h2 class="text-4xl font-bold bg-gradient-to-r from-pink-400 to-blue-400 bg-clip-text text-transparent">🎞️ Demo 🔴</h2>
+      <div class="grid md:grid-cols-2 gap-8 max-w-6xl w-full">
+        <div class="aspect-video bg-white/10 rounded-xl overflow-hidden shadow-xl backdrop-blur-md">
+          <video src="p4.mov" autoplay loop muted playsinline class="w-full h-full object-cover"></video>
+        </div>
+        <div class="aspect-video bg-white/10 rounded-xl overflow-hidden shadow-xl backdrop-blur-md">
+          <video src="p5.mov" autoplay loop muted playsinline class="w-full h-full object-cover"></video>
+        </div>
+      </div>
+    </section>
 
-<section id="showcase" class="relative z-10 py-20 px-6 flex flex-col items-center space-y-12 fade-in-section">
-  <h2 class="text-4xl font-bold bg-gradient-to-r from-pink-400 to-blue-400 bg-clip-text text-transparent">🎞️ Demo 🔴</h2>
-  <div class="grid md:grid-cols-2 gap-8 max-w-6xl w-full">
-    <div class="aspect-video bg-white/10 rounded-xl overflow-hidden shadow-xl backdrop-blur-md">
-      <video src="p4.mov" autoplay loop muted playsinline class="w-full h-full object-cover"></video>
-    </div>
-    <div class="aspect-video bg-white/10 rounded-xl overflow-hidden shadow-xl backdrop-blur-md">
-      <video src="p5.mov" autoplay loop muted playsinline class="w-full h-full object-cover"></video>
-    </div>
+    <section id="features" class="relative z-10 py-20 px-6 flex flex-col items-center space-y-12 fade-in-section">
+      <h2 class="text-4xl font-bold bg-gradient-to-r from-blue-400 to-pink-400 bg-clip-text text-transparent">💡 Key Features 🧩</h2>
+      <div class="grid md:grid-cols-2 gap-10 max-w-6xl w-full text-white/90 text-sm">
+        <div class="aspect-video bg-white/10 rounded-xl overflow-hidden shadow-xl backdrop-blur-md">
+          <video src="p11.mov" autoplay loop muted playsinline class="w-full h-full object-cover"></video>
+        </div>
+        <p><strong>Mods/Plugin support 🧩</strong><br>.vem files allow you to modify everything using the Vectimate Module API.</p>
+        <div class="aspect-video bg-white/10 rounded-xl overflow-hidden shadow-xl backdrop-blur-md">
+          <video src="p2.mov" autoplay loop muted playsinline class="w-full h-full object-cover"></video>
+        </div>
+        <p><strong>CSS customization 🎨</strong><br>Use CSS to make your streams look beautiful!</p>
+        <div class="aspect-video bg-white/10 rounded-xl overflow-hidden shadow-xl backdrop-blur-md">
+          <video src="p3.mov" autoplay loop muted playsinline class="w-full h-full object-cover"></video>
+        </div>
+        <p><strong>Background Customization 🎨</strong><br>Add animated or static backgrounds with the background mod.</p>
+        <div class="aspect-video bg-white/10 rounded-xl overflow-hidden shadow-xl backdrop-blur-md">
+          <img src="scenes.png" alt="Scene Preview" class="w-full h-full object-cover" />
+        </div>
+        <p><strong>Multiple Scene Support 📺</strong><br>Load and keybind multiple scenes with smooth transitions.</p>
+      </div>
+    </section>
+
+    <!-- bubbles & confetti scripts (unchanged) -->
+    <script>
+      /* Background bubbles omitted for brevity — copy your existing code here */
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script>
+      /* confetti on click… copy your existing code */
+    </script>
+    <script>
+      /* intersection-observer for fade-in sections… copy your existing code */
+    </script>
   </div>
-</section>
+  <script>
+    window.addEventListener('load', () => {
+      // V (1s) + T (0.6s delay + 0.6s draw) = 2.2s
+      setTimeout(() => {
+        document.getElementById('splash').classList.add('fade-out');
+        setTimeout(() => {
+          document.getElementById('main').style.opacity = '1';
 
-<section id="features" class="relative z-10 py-20 px-6 flex flex-col items-center space-y-12 fade-in-section">
-  <h2 class="text-4xl font-bold bg-gradient-to-r from-blue-400 to-pink-400 bg-clip-text text-transparent">💡 Key Features 🧩</h2>
-  <div class="grid md:grid-cols-2 gap-10 max-w-6xl w-full text-white/90 text-sm">
-    <div class="aspect-video bg-white/10 rounded-xl overflow-hidden shadow-xl backdrop-blur-md">
-      <video src="p11.mov" autoplay loop muted playsinline class="w-full h-full object-cover"></video> <!-- needs to be rebuilt -->
-    </div>
-    <p><strong>Mods/Plugin support 🧩</strong><br>.vem files allow you to modify everything using the Vectimate Module API.</p>
-    <div class="aspect-video bg-white/10 rounded-xl overflow-hidden shadow-xl backdrop-blur-md">
-      <video src="p2.mov" autoplay loop muted playsinline class="w-full h-full object-cover"></video>
-    </div>
-    <p><strong>CSS customization 🎨</strong><br>Use CSS to make your streams look beautiful!</p>
-    <div class="aspect-video bg-white/10 rounded-xl overflow-hidden shadow-xl backdrop-blur-md">
-      <video src="p3.mov" autoplay loop muted playsinline class="w-full h-full object-cover"></video>
-    </div>
-    <p><strong>Background Customization 🎨</strong><br>Add animated or static backgrounds with the background mod.</p>
-    <div class="aspect-video bg-white/10 rounded-xl overflow-hidden shadow-xl backdrop-blur-md">
-      <img src="scenes.png" alt="Scene Preview" class="w-full h-full object-cover" />
-    </div>
-    <p><strong>Multiple Scene Support 📺</strong><br>Load and keybind multiple scenes with smooth transitions.</p>
-  </div>
-</section>
-
+          // now that main is visible, hook up IntersectionObserver
+          const io = new IntersectionObserver((entries, obs) => {
+            entries.forEach(e => {
+              if (e.isIntersecting) {
+                e.target.classList.add('visible');
+                obs.unobserve(e.target);
+              }
+            });
+          }, { threshold: 0.1 });
+          document.querySelectorAll('.fade-in-section').forEach(el => io.observe(el));
+        }, 600);
+      }, 2200);
+    });
+  </script>
 <script>
   const canvas = document.getElementById("bgCanvas");
   const ctx = canvas.getContext("2d");
