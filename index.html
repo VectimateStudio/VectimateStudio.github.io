@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="Vectimate Studio — customizable OBS scene creator with mods and CSS theming." />
+  <title>Vectimate Studio</title>
+  <!-- Tailwind CDN (dev only). Replace with a build for production. -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    :root { --glass: rgba(255,255,255,0.06); --glass-strong: rgba(255,255,255,0.10); }
+    html { scroll-behavior: smooth; scroll-padding-top: 96px; }
+    body { margin: 0; font-family: Inter, 'Segoe UI', system-ui, -apple-system, 'Helvetica Neue', Arial; background: #000; color: #fff; }
+
+    /* Background canvas sits behind everything and is high-DPI aware */
+    #bgCanvas { position: fixed; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; filter: blur(36px) saturate(110%); mix-blend-mode: screen; }
+
+    /* small animations */
+    @keyframes floatLogo { 0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)} }
+    .logo { animation: floatLogo 4s ease-in-out infinite; }
+
+    /* simple fade-in used in JS intersection observer */
+    .fade-in-section { opacity: 0; transform: translateY(20px); transition: all 700ms cubic-bezier(.2,.9,.2,1); }
+    .fade-in-section.visible { opacity: 1; transform: translateY(0); }
+
+    /* accessible focus outlines */
+    a:focus, button:focus { outline: 3px solid rgba(99,102,241,0.18); outline-offset: 3px; }
+
+    header { -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px); }
+
+    /* small responsive adjustments */
+    @media (max-width:640px){ .main-title { font-size: 2rem; } }
+  </style>
+</head>
+<body>
+
+  <!-- skip link for keyboard users -->
+  <a class="sr-only focus:not-sr-only absolute left-4 top-4 z-60 bg-white/8 px-3 py-2 rounded-md text-sm" href="#main">Skip to content</a>
+
+  <canvas id="bgCanvas" aria-hidden="true"></canvas>
+
+  <header class="fixed inset-x-0 top-4 z-50 flex justify-center">
+    <div class="w-full max-w-6xl px-4 flex items-center justify-between">
+      <div class="flex items-center gap-3 bg-[var(--glass)]/90 backdrop-blur-md px-3 py-2 rounded-full shadow-lg">
+        <img src="VSU.png" alt="Vectimate Studio logo" class="w-9 h-9 rounded-full object-cover" />
+        <a href="#" class="font-semibold text-sm bg-clip-text text-transparent bg-gradient-to-r from-blue-300 to-pink-300">Vectimate Studio</a>
+      </div>
+
+      <nav role="navigation" aria-label="Primary" class="hidden sm:flex gap-3 items-center">
+        <a href="#showcase" class="px-3 py-2 rounded-full text-sm bg-[var(--glass)] hover:bg-[var(--glass-strong)] transition">Showcase</a>
+        <a href="#features" class="px-3 py-2 rounded-full text-sm bg-[var(--glass)] hover:bg-[var(--glass-strong)] transition">Features</a>
+        <a href="https://github.com/VectimateStudio/studio" target="_blank" rel="noopener" class="px-3 py-2 rounded-full text-sm bg-[var(--glass)] hover:bg-[var(--glass-strong)] transition">GitHub</a>
+      </nav>
+
+      <div class="sm:hidden">
+        <!-- mobile compact actions -->
+        <button id="mobileMenuBtn" aria-expanded="false" class="p-2 rounded-full bg-[var(--glass)] hover:bg-[var(--glass-strong)]">☰</button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main" class="relative z-10 min-h-screen flex flex-col items-center justify-center text-center px-4 pt-28">
+
+    <div class="w-full max-w-4xl">
+      <div class="mx-auto bg-[var(--glass)] backdrop-blur-xl p-8 rounded-2xl shadow-2xl">
+        <img src="VSU.png" alt="Vectimate logo" class="logo w-24 h-24 rounded-lg mx-auto mb-4" />
+        <h1 class="main-title text-center text-5xl font-extrabold bg-gradient-to-r from-blue-400 to-pink-400 bg-clip-text text-transparent">Vectimate Studio</h1>
+        <p class="mt-4 text-white/80 max-w-2xl mx-auto leading-relaxed">The most customizable OBS Scene creator. Customize with mods (.vem), CSS (using the CSS mod), and community packages.</p>
+
+        <div class="mt-6 flex flex-col sm:flex-row gap-4 justify-center">
+          <a href="https://vectimatestudio.github.io/studio/" target="_blank" rel="noopener" class="confetti-btn inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-gradient-to-r from-blue-400 to-pink-400 text-black font-semibold shadow-lg transform transition hover:scale-105" aria-label="Launch Vectimate">🚀 Launch Vectimate</a>
+          <a href="https://github.com/VectimateStudio/studio" target="_blank" rel="noopener" class="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-white/6 hover:bg-white/10 text-sm text-white font-medium">&gt;_ Visit Project</a>
+        </div>
+      </div>
+    </div>
+
+    <p class="mt-8 text-sm text-white/70">Scroll for demos and features</p>
+
+  </main>
+
+  <!-- Showcase -->
+  <section id="showcase" class="py-20 px-6 fade-in-section">
+    <div class="max-w-6xl mx-auto">
+      <h2 class="text-3xl font-bold mb-8 bg-clip-text text-transparent bg-gradient-to-r from-pink-400 to-blue-400">🎞️ Demo</h2>
+      <div class="grid md:grid-cols-2 gap-8">
+        <div class="aspect-video rounded-xl overflow-hidden bg-white/6 shadow-lg">
+          <video src="p4.mov" autoplay muted loop playsinline preload="metadata" class="w-full h-full object-cover" aria-label="Demo 1" ></video>
+        </div>
+        <div class="aspect-video rounded-xl overflow-hidden bg-white/6 shadow-lg">
+          <video src="p5.mov" autoplay muted loop playsinline preload="metadata" class="w-full h-full object-cover" aria-label="Demo 2"></video>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Features -->
+  <section id="features" class="py-20 px-6 fade-in-section">
+    <div class="max-w-6xl mx-auto text-white/90">
+      <h2 class="text-3xl font-bold mb-8 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-pink-400">💡 Key Features</h2>
+      <div class="grid md:grid-cols-2 gap-8 items-start">
+        <div class="space-y-4">
+          <div class="aspect-video rounded-xl overflow-hidden bg-white/6 shadow-lg">
+            <video src="p11.mov" autoplay muted loop playsinline preload="metadata" class="w-full h-full object-cover" aria-label="Feature demo"></video>
+          </div>
+          <p><strong>Mods / Plugin support</strong><br>.vem files allow you to modify everything using the Vectimate Module API.</p>
+
+          <div class="aspect-video rounded-xl overflow-hidden bg-white/6 shadow-lg">
+            <video src="p2.mov" autoplay muted loop playsinline preload="metadata" class="w-full h-full object-cover" aria-label="CSS demo"></video>
+          </div>
+          <p><strong>CSS customization</strong><br>Use the CSS mod to make your streams look beautiful and unique.</p>
+
+        </div>
+
+        <div class="space-y-4">
+          <div class="aspect-video rounded-xl overflow-hidden bg-white/6 shadow-lg">
+            <video src="p3.mov" autoplay muted loop playsinline preload="metadata" class="w-full h-full object-cover" aria-label="Background demo"></video>
+          </div>
+          <p><strong>Background customization</strong><br>Add animated or static backgrounds with the background mod.</p>
+
+          <div class="aspect-video rounded-xl overflow-hidden bg-white/6 shadow-lg">
+            <img src="scenes.png" alt="Scene preview" class="w-full h-full object-cover" />
+          </div>
+          <p><strong>Multiple scene support</strong><br>Load and keybind multiple scenes with smooth transitions.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer class="py-8 text-center text-sm text-white/70">
+    <div class="max-w-6xl mx-auto px-4">Made with ❤️ — <a href="https://github.com/VectimateStudio/studio" target="_blank" rel="noopener" class="underline">Project on GitHub</a></div>
+  </footer>
+
+
+  <!-- Scripts -->
+  <script>
+    // High-DPI friendly canvas setup and animated bubbles
+    const canvas = document.getElementById('bgCanvas');
+    const ctx = canvas.getContext('2d');
+    let width = 0, height = 0, dpr = Math.max(1, window.devicePixelRatio || 1);
+    let bubbles = [];
+
+    function resizeCanvas() {
+      width = window.innerWidth;
+      height = window.innerHeight; // full viewport height for the fixed canvas
+      canvas.style.width = width + 'px';
+      canvas.style.height = height + 'px';
+      canvas.width = Math.floor(width * dpr);
+      canvas.height = Math.floor(height * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      // regenerate bubbles so positions fit the new size
+      bubbles = Array.from({length: Math.max(18, Math.round(width/80))}, () => createBubble(true));
+    }
+
+    function rand(min, max){ return Math.random()*(max-min)+min }
+
+    function createBubble(initial=false){
+      return {
+        x: rand(0, width),
+        y: initial ? rand(0, height) : height + rand(20, 300),
+        r: rand(60, 160),
+        z: rand(0.25, 0.9),
+        speed: rand(0.02, 0.45),
+        colorBase: Math.random() > 0.5 ? [130,228,255] : [255,179,246],
+        timer: 0,
+        life: rand(6000, 11000),
+        fade: 900
+      };
+    }
+
+    function easeOutCubic(t){ return 1 - Math.pow(1 - t, 3) }
+
+    let last = performance.now();
+    function animate(now){
+      const dt = Math.min(60, now - last);
+      last = now;
+      ctx.clearRect(0, 0, width, height);
+
+      for (let b of bubbles){
+        b.y -= b.speed * b.z * (dt);
+        b.timer += dt;
+        const progress = b.timer / b.life;
+
+        // fade in/out
+        let alpha = 0.12;
+        if (b.timer < b.fade) alpha *= easeOutCubic(b.timer / b.fade);
+        else if (b.timer > b.life - b.fade) alpha *= easeOutCubic((b.life - b.timer) / b.fade);
+
+        const scale = 0.5 + 0.5 * b.z;
+        ctx.beginPath();
+        ctx.fillStyle = `rgba(${b.colorBase[0]}, ${b.colorBase[1]}, ${b.colorBase[2]}, ${alpha})`;
+        ctx.arc(b.x, b.y, b.r * scale, 0, Math.PI*2);
+        ctx.fill();
+
+        if (b.y + b.r*scale < -50 || b.timer > b.life) Object.assign(b, createBubble(false));
+      }
+
+      requestAnimationFrame(animate);
+    }
+
+    window.addEventListener('resize', resizeCanvas);
+    window.addEventListener('orientationchange', resizeCanvas);
+    resizeCanvas();
+    requestAnimationFrame(animate);
+
+    // Confetti: only trigger on CTA with class .confetti-btn to avoid global clicks
+    (function(){
+      // lazy-load confetti script when user clicks CTA first time
+      let confettiLoaded = false;
+      function loadConfetti(cb){
+        if (confettiLoaded) return cb && cb();
+        const s = document.createElement('script');
+        s.src = 'https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js';
+        s.onload = () => { confettiLoaded = true; cb && cb(); };
+        document.head.appendChild(s);
+      }
+
+      document.querySelectorAll('.confetti-btn').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          loadConfetti(() => {
+            if (window.confetti){
+              const x = e.clientX / window.innerWidth;
+              const y = e.clientY / window.innerHeight;
+              confetti({ origin: { x, y }, particleCount: 60, spread: 160, scalar: 0.7, gravity: 0.8 });
+            }
+          });
+        });
+      });
+    })();
+
+    // Intersection observer for nice entrance animations
+    document.addEventListener('DOMContentLoaded', () => {
+      const io = new IntersectionObserver((entries, obs) => {
+        entries.forEach(e => { if (e.isIntersecting){ e.target.classList.add('visible'); obs.unobserve(e.target); } });
+      }, { threshold: 0.1 });
+      document.querySelectorAll('.fade-in-section').forEach(el => io.observe(el));
+    });
+
+    // small mobile menu toggle (keeps HTML simple)
+    const mobileBtn = document.getElementById('mobileMenuBtn');
+    if (mobileBtn){
+      mobileBtn.addEventListener('click', ()=>{
+        const expanded = mobileBtn.getAttribute('aria-expanded') === 'true';
+        mobileBtn.setAttribute('aria-expanded', String(!expanded));
+        // simple inline menu just for demonstration
+        let menu = document.getElementById('mobileMenu');
+        if (!menu){
+          menu = document.createElement('div');
+          menu.id = 'mobileMenu';
+          menu.className = 'fixed right-4 top-16 bg-[var(--glass)] backdrop-blur-md p-3 rounded-lg shadow-lg z-60 flex flex-col gap-2';
+          menu.innerHTML = `
+            <a href="#showcase" class="px-3 py-2 rounded-md">Showcase</a>
+            <a href="#features" class="px-3 py-2 rounded-md">Features</a>
+            <a href="https://github.com/VectimateStudio/studio" target="_blank" rel="noopener" class="px-3 py-2 rounded-md">GitHub</a>
+          `;
+          document.body.appendChild(menu);
+        } else menu.remove();
+      });
+    }
+
+  </script>
+
+</body>
+</html>
